@@ -17,8 +17,8 @@ driver_state::~driver_state()
 void initialize_render(driver_state& state, int width, int height)
 {
     // Set image width and height
-    state.image_width = width;
-    state.image_height = height;
+    state.image_width=width;
+    state.image_height=height;
 
     // Allocate space for all pixels in image_color
     state.image_color = new pixel[width * height];
@@ -28,8 +28,7 @@ void initialize_render(driver_state& state, int width, int height)
     }
     
     state.image_depth=0;
-    
-    
+
     // std::cout<<"TODO: allocate and initialize state.image_color and state.image_depth."<<std::endl;
 }
 
@@ -54,17 +53,17 @@ void render(driver_state& state, render_type type)
     data_vertex dv;
     for(int i = 0; i < state.num_vertices; i++){
         // Create a data_vertex passing in the location of the first float in vertex_data for that data_vertex
-        dv.data = state.vertex_data + (i * state.floats_per_vertex);
+        dv.data = &state.vertex_data[i * state.floats_per_vertex];
         state.vertex_shader(dv, dg_arr[i], state.uniform_data);
     }
 
     switch(type){
         case render_type::triangle:
             for(int i = 0; i < state.num_vertices; i++){
-                dg_arr[i].data = state.vertex_data + (i * state.floats_per_vertex);
+                dg_arr[i].data = &state.vertex_data[i * state.floats_per_vertex];
             }
-            for(int i = 0; i < state.num_vertices - 3; i += 3){
-                rasterize_triangle(state, dg_arr[i], dg_arr[i + 1], dg_arr[i + 2]);
+            for(int i = 0; i < state.num_vertices / 3; i++){
+                rasterize_triangle(state, dg_arr[3 * i], dg_arr[3 * i + 1], dg_arr[3 * i + 2]);
             }
             break;
 
@@ -143,8 +142,7 @@ void rasterize_triangle(driver_state& state, const data_geometry& v0,
             gamma = area(p, p0, p1) / ABC;
 
             if(alpha >= 0 && beta >= 0 && gamma >= 0){
-                std::cout << "here" << std::endl;
-                // state.image_color[get_index(i, j, width)] = make_pixel(255, 255, 255);
+                state.image_color[get_index(i, j, width)] = make_pixel(255, 255, 255);
             }
         }
     }
